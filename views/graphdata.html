@@ -1,0 +1,11 @@
+<% include header.html %>
+
+<h1>Graph datapoints</h1>
+<form action="/graphdata/" method="post">
+<% graphData.forEach(function(graphPoint, index){ %>
+<input type="text" name="graphdatainput[<%= index %>]" value="<%= graphPoint %>"/>
+<br/>
+<% }) %>
+<input type="submit" value="Submit">
+</form>
+<% include footer.html %>

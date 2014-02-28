@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type='text/javascript' src='http://code.jquery.com/jquery-1.9.1.js'></script>
+    <script>
+        var socket = io.connect('http://localhost');
+
+        var abc = <%- users %> ;
+        console.log(abc);
+        console.log(abc[0].name);
+
+        //use individual or global
+        socket.on('global', function (data) {
+            console.log(data);
+            var series = pollChart.series[0];
+            series.addPoint([data.x, parseInt(data.y)], true, true);
+        });/*
+        socket.on('individual', function (data) {
+            console.log('unused msg' + data);
+        });*/
+    </script>
+
+    <script type='text/javascript'>
+        var pollChart;
+        $(document).ready(function() {
+            Highcharts.setOptions({
+                global : {
+                    useUTC : false
+                }
+            });
+
+            // Create the chart
+            pollChart = Highcharts.StockChart({
+                chart : {
+                    renderTo: 'container'
+                },
+
+                rangeSelector: {
+                    buttons: [{
+                        count: 1,
+                        type: 'minute',
+                        text: '1M'
+                    }, {
+                        count: 5,
+                        type: 'minute',
+                        text: '5M'
+                    }, {
+                        type: 'all',
+                        text: 'All'
+                    }],
+                    inputEnabled: false,
+                    selected: 0
+                },
+
+                title : {
+                    text : 'Live random data'
+                },
+
+                exporting: {
+                    enabled: false
+                },
+
+                series : [{
+                    name : 'Random data',
+                    data : (function() {
+                        // generate an array of random data
+                        var data = [], time = (new Date()).getTime(), i;
+
+                        for( i = -50; i <= 0; i++) {
+                            data.push([
+                                time + i * 1000,
+                                Math.round(Math.random() * 100)
+                            ]);
+                        }
+                        return data;
+                    })()
+                }]
+            });
+
+        });
+
+        function myFunction(){
+            // set up the updating of the chart each second
+            var series = pollChart.series[0];
+            //setInterval(function() {
+            var x = (new Date()).getTime(), // current time
+                    y = Math.round(Math.random() * 100);
+            series.addPoint([x, y], true, true);
+            //}, 1000);
+        }
+
+    </script>
+</head>
+<body>
+<script src="http://code.highcharts.com/stock/highstock.js"></script>
+<script src="http://code.highcharts.com/stock/modules/exporting.js"></script>
+
+<div id="container" style="height: 500px; min-width: 500px"></div>
+
+<p>
+    <button type="button" onclick="myFunction()">Add datapoint on clientside</button>
+</p>
+
+</body>
+</html>
